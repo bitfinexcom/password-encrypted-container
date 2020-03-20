@@ -100,13 +100,14 @@ class DataHeader {
 }
 DataHeader.BYTES = 4 + sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
 
+const cache = new WeakMap()
 // Would be cool to add a libhydrogen style probe ie. blake2b(key=derivedKey, data=nonce)
 class PasswordEncryptedBuffer {
   constructor (buf) {
     assert(buf.byteLength >= PasswordEncryptedBuffer.BYTES - DATA_MAC_BYTES, 'PasswordEncryptedBuffer buffer too small')
     this.destroyed = false
 
-    this.key = sodium.sodium_malloc(sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES)
+    cache.set(this, sodium.sodium_malloc(sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES))
     this.buffer = buf
 
     this._keyHeader = new KeyHeader(this.buffer.subarray(4, 4 + KeyHeader.BYTES))
@@ -135,14 +136,15 @@ class PasswordEncryptedBuffer {
   }
 
   deriveKey (passphrase, cb) {
+    const key = cache.get(this)
     PasswordEncryptedBuffer.deriveKey(passphrase, {
-      key: this.key,
+      key: key,
       nonce: this._keyHeader.nonce,
       opslimit: this._keyHeader.opslimit,
       memlimit: this._keyHeader.memlimit,
       alg: this._keyHeader.alg
     }, (err) => {
-      return cb(err, this.key)
+      return cb(err)
     })
   }
 
@@ -181,7 +183,7 @@ class PasswordEncryptedBuffer {
       ciphertext.subarray(PasswordEncryptedBuffer.BYTES - DATA_MAC_BYTES),
       this._keyHeader.buffer,
       this._dataHeader.nonce,
-      this.key
+      cache.get(this)
     )
 
     return plaintext
@@ -197,7 +199,7 @@ class PasswordEncryptedBuffer {
       this._keyHeader.buffer,
       null,
       this._dataHeader.nonce,
-      this.key
+      cache.get(this)
     )
     ciphertext.set(this.buffer)
 
@@ -205,8 +207,9 @@ class PasswordEncryptedBuffer {
   }
 
   destroy () {
-    sodium.sodium_memzero(this.key)
+    sodium.sodium_memzero(cache.get(this))
     sodium.sodium_memzero(this.buffer)
+    cache.delete(this)
 
     this.destroyed = true
   }
@@ -214,11 +217,8 @@ class PasswordEncryptedBuffer {
 const DATA_MAC_BYTES = sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES
 PasswordEncryptedBuffer.BYTES = 4 + KeyHeader.BYTES + DataHeader.BYTES + DATA_MAC_BYTES
 
-const cache = new WeakMap()
-
 class PasswordEncryptedContainer {
-  constructor (key, peb) {
-    cache.set(this, key)
+  constructor (peb) {
     this.destroyed = false
     this.peb = peb
   }
@@ -247,9 +247,6 @@ class PasswordEncryptedContainer {
     if (this.destroyed === true) return
 
     this.peb.destroy()
-    var key = cache.get(this)
-    sodium.sodium_memzero(key)
-    cache.delete(this)
     this.destroyed = true
   }
 
@@ -262,9 +259,9 @@ class PasswordEncryptedContainer {
     opts = Object.assign({}, module.exports.MODERATE, opts)
     var initPeb = new PasswordEncryptedBuffer(Buffer.alloc(PasswordEncryptedBuffer.BYTES - DATA_MAC_BYTES))
     initPeb.init(opts.opslimit, opts.memlimit)
-    initPeb.deriveKey(passphrase, (err, key) => {
+    initPeb.deriveKey(passphrase, (err) => {
       if (err) return cb(err)
-      cb(null, new this(key, initPeb))
+      cb(null, new this(initPeb))
     })
   }
 
@@ -272,9 +269,9 @@ class PasswordEncryptedContainer {
     var initPeb = new PasswordEncryptedBuffer(buf.subarray(0, PasswordEncryptedBuffer.BYTES - DATA_MAC_BYTES))
     initPeb.validate()
 
-    initPeb.deriveKey(passphrase, (err, key) => {
+    initPeb.deriveKey(passphrase, (err) => {
       if (err) return cb(err)
-      cb(null, new this(key, initPeb))
+      cb(null, new this(initPeb))
     })
   }
 
