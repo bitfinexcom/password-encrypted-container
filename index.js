@@ -157,16 +157,19 @@ class PasswordEncryptedBuffer {
       sodium.randombytes_buf(nonce)
     }
 
-    sodium.crypto_pwhash(
+    sodium.crypto_pwhash_async(
       key,
       passphrase,
       nonce,
       opts.opslimit,
       opts.memlimit,
-      opts.alg || sodium.crypto_pwhash_ALG_ARGON2ID13
-    )
+      opts.alg || sodium.crypto_pwhash_ALG_ARGON2ID13,
+      (err) => {
+        if (err) return cb(err)
 
-    return cb(null, key, nonce)
+        return cb(null, key, nonce)
+      }
+    )
   }
 
   decrypt (ciphertext) {
