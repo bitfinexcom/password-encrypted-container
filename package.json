@@ -1,6 +1,6 @@
 {
   "name": "@hyperdivision/password-encrypted-container",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Password encrypted container",
   "main": "index.js",
   "publishConfig": {
