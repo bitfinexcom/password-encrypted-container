@@ -1,0 +1,32 @@
+{
+  "name": "@hyperdivision/password-encrypted-container",
+  "version": "0.0.0",
+  "description": "Password encrypted container",
+  "main": "index.js",
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "dependencies": {
+    "nanoassert": "^2.0.0",
+    "sodium-native": "^3.0.0"
+  },
+  "devDependencies": {
+    "standard": "^14.3.3",
+    "tape": "^4.13.2"
+  },
+  "scripts": {
+    "pretest": "standard",
+    "test": "tape test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyperdivision/password-encrypted-container.git"
+  },
+  "keywords": [],
+  "author": "Emil Bay <github@tixz.dk>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hyperdivision/password-encrypted-container/issues"
+  },
+  "homepage": "https://github.com/hyperdivision/password-encrypted-container#readme"
+}
