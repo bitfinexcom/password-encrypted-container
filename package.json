@@ -1,6 +1,6 @@
 {
   "name": "password-encrypted-container",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Password encrypted container",
   "main": "index.js",
   "dependencies": {
