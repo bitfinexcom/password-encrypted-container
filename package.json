@@ -1,11 +1,8 @@
 {
-  "name": "@hyperdivision/password-encrypted-container",
+  "name": "password-encrypted-container",
   "version": "1.0.2",
   "description": "Password encrypted container",
   "main": "index.js",
-  "publishConfig": {
-    "access": "restricted"
-  },
   "dependencies": {
     "nanoassert": "^2.0.0",
     "sodium-native": "^3.0.0"
