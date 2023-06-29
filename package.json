@@ -1,15 +1,15 @@
 {
   "name": "password-encrypted-container",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Password encrypted container",
   "main": "index.js",
   "dependencies": {
     "nanoassert": "^2.0.0",
-    "sodium-native": "^3.0.0"
+    "sodium-native": "^4.0.4"
   },
   "devDependencies": {
-    "standard": "^14.3.3",
-    "tape": "^4.13.2"
+    "standard": "^17.3.3",
+    "tape": "^5.6.3"
   },
   "scripts": {
     "pretest": "standard",
@@ -17,13 +17,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hyperdivision/password-encrypted-container.git"
+    "url": "git+https://github.com/bitfinexcom/password-encrypted-container.git"
   },
   "keywords": [],
   "author": "Emil Bay <github@tixz.dk>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/hyperdivision/password-encrypted-container/issues"
+    "url": "https://github.com/bitfinexcom/password-encrypted-container/issues"
   },
-  "homepage": "https://github.com/hyperdivision/password-encrypted-container#readme"
+  "homepage": "https://github.com/bitfinexcom/password-encrypted-container#readme"
 }
